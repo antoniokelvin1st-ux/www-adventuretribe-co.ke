@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adventure Tribe | Escape • Connect • Explore</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 
 <style>
 
@@ -18,8 +18,8 @@ scroll-behavior:smooth;
 
 body{
 font-family:'Montserrat',sans-serif;
-background:#0b0b0b;
-color:white;
+background:#050505;
+color:#f4f1ea;
 overflow-x:hidden;
 }
 
@@ -27,20 +27,18 @@ overflow-x:hidden;
 
 #loader{
 position:fixed;
-width:100%;
-height:100vh;
+inset:0;
 background:#000;
 display:flex;
 justify-content:center;
 align-items:center;
 z-index:9999;
-font-size:2rem;
-font-weight:800;
+font-weight:900;
 letter-spacing:5px;
 transition:1s;
 }
 
-/* NAVBAR */
+/* NAV */
 
 nav{
 position:fixed;
@@ -50,14 +48,13 @@ padding:20px 8%;
 display:flex;
 justify-content:space-between;
 align-items:center;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,.5);
 backdrop-filter:blur(12px);
 z-index:1000;
 }
 
 .logo{
-font-size:1.2rem;
-font-weight:800;
+font-weight:900;
 letter-spacing:4px;
 }
 
@@ -67,87 +64,77 @@ gap:25px;
 list-style:none;
 }
 
-nav ul li a{
+nav a{
 text-decoration:none;
 color:white;
-font-size:0.9rem;
-transition:0.3s;
+font-size:.9rem;
+transition:.3s;
 }
 
-nav ul li a:hover{
-color:#c2a878;
+nav a:hover{
+color:#d0c5a5;
 }
 
 /* HERO */
 
 .hero{
-height:100vh;
+min-height:100vh;
 background:
-linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.8)),
-url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1974&auto=format&fit=crop');
+linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.88)),
+url("adventuretribe-brand.png");
 background-size:cover;
 background-position:center;
 display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:20px;
+align-items:end;
+padding:120px 8%;
 }
 
 .hero-content{
-max-width:850px;
+max-width:750px;
 animation:fadeUp 1.5s ease;
 }
 
 .hero h1{
-font-size:5rem;
+font-size:4.8rem;
 font-weight:900;
-letter-spacing:8px;
-margin-bottom:20px;
+letter-spacing:6px;
 }
 
 .hero p{
-font-size:1.3rem;
-letter-spacing:5px;
-color:#c2a878;
-margin-bottom:35px;
+margin:15px 0;
+color:#d0c5a5;
+letter-spacing:3px;
 }
 
-.buttons{
+.btns{
+margin-top:30px;
 display:flex;
-justify-content:center;
-gap:20px;
+gap:15px;
 flex-wrap:wrap;
 }
 
 .btn{
-padding:15px 35px;
-border:none;
+padding:14px 28px;
 border-radius:40px;
-cursor:pointer;
-font-weight:700;
-transition:0.4s;
-letter-spacing:2px;
+text-decoration:none;
+font-weight:800;
+letter-spacing:1px;
+transition:.35s;
+display:inline-block;
 }
 
-.btn-primary{
-background:#c2a878;
-color:black;
+.primary{
+background:#f4f1ea;
+color:#050505;
 }
 
-.btn-primary:hover{
+.secondary{
+border:1px solid #f4f1ea;
+color:#f4f1ea;
+}
+
+.btn:hover{
 transform:translateY(-5px);
-}
-
-.btn-secondary{
-background:transparent;
-border:1px solid #c2a878;
-color:#c2a878;
-}
-
-.btn-secondary:hover{
-background:#c2a878;
-color:black;
 }
 
 /* GENERAL */
@@ -156,11 +143,61 @@ section{
 padding:100px 8%;
 }
 
-.section-title{
-font-size:2.7rem;
+.title{
 text-align:center;
-margin-bottom:60px;
-letter-spacing:3px;
+font-size:2.5rem;
+letter-spacing:4px;
+margin-bottom:55px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:28px;
+}
+
+.card{
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+border-radius:22px;
+overflow:hidden;
+backdrop-filter:blur(15px);
+transition:.4s;
+}
+
+.card:hover{
+transform:translateY(-10px);
+}
+
+.card img{
+width:100%;
+height:280px;
+object-fit:cover;
+}
+
+.info{
+padding:22px;
+}
+
+.price{
+color:#d0c5a5;
+margin:12px 0;
+font-weight:800;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#f4f1ea;
+font-weight:800;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-4px);
 }
 
 /* ABOUT */
@@ -174,299 +211,56 @@ align-items:center;
 
 .about img{
 width:100%;
-border-radius:20px;
-height:500px;
-object-fit:cover;
+border-radius:24px;
 }
 
-.about-text h2{
-font-size:2.5rem;
-margin-bottom:20px;
-}
-
-.about-text p{
+.about p{
 line-height:1.9;
-color:#ccc;
+color:#aaa;
 }
 
-/* ACTIVITIES */
-
-.activities{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:30px;
-}
-
-.activity-card{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:20px;
-overflow:hidden;
-backdrop-filter:blur(12px);
-transition:0.5s;
-}
-
-.activity-card:hover{
-transform:translateY(-10px);
-}
-
-.activity-card img{
-width:100%;
-height:250px;
-object-fit:cover;
-}
-
-.activity-info{
-padding:25px;
-}
-
-.activity-info h3{
-margin-bottom:10px;
-}
-
-.activity-info p{
-color:#ccc;
-font-size:0.95rem;
-line-height:1.7;
-margin-bottom:15px;
-}
-
-.activity-price{
-color:#c2a878;
-margin-bottom:15px;
-font-weight:700;
-}
-
-.ticket-btn{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#c2a878;
-font-weight:700;
-cursor:pointer;
-}
-
-/* BOOKING */
-
-.booking-form{
-max-width:700px;
-margin:auto;
-background:rgba(255,255,255,0.05);
-padding:40px;
-border-radius:20px;
-backdrop-filter:blur(12px);
-}
-
-.booking-form input,
-.booking-form select{
-width:100%;
-padding:15px;
-margin-bottom:20px;
-border:none;
-border-radius:10px;
-background:#1a1a1a;
-color:white;
-}
-
-.booking-form button{
-width:100%;
-padding:15px;
-border:none;
-border-radius:10px;
-background:#c2a878;
-font-weight:700;
-cursor:pointer;
-}
-
-/* SHOP */
-
-.products{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:30px;
-}
-
-.product-card{
-background:rgba(255,255,255,0.05);
-border-radius:20px;
-overflow:hidden;
-transition:0.5s;
-border:1px solid rgba(255,255,255,0.08);
-}
-
-.product-card:hover{
-transform:translateY(-10px);
-}
-
-.product-card img{
-width:100%;
-height:300px;
-object-fit:cover;
-}
-
-.product-info{
-padding:20px;
-}
-
-.product-info h3{
-margin-bottom:10px;
-}
-
-.product-price{
-color:#c2a878;
-margin-bottom:15px;
-}
-
-.product-info select{
-width:100%;
-padding:10px;
-margin-bottom:15px;
-border-radius:8px;
-border:none;
-background:#1a1a1a;
-color:white;
-}
-
-.cart-btn{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#c2a878;
-font-weight:700;
-cursor:pointer;
-}
-
-/* CART */
-
-.cart{
-max-width:600px;
-margin:auto;
-background:rgba(255,255,255,0.05);
-padding:30px;
-border-radius:20px;
-text-align:center;
-}
-
-.cart h3{
-margin-bottom:20px;
-}
-
-#cart-items{
-margin-bottom:20px;
-}
-
-#total{
-color:#c2a878;
-font-weight:700;
-}
-
-/* GALLERY */
-
-.gallery{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-}
-
-.gallery img{
-width:100%;
-height:350px;
-object-fit:cover;
-border-radius:20px;
-transition:0.5s;
-}
-
-.gallery img:hover{
-transform:scale(1.05);
-}
-
-/* FEATURES */
-
-.features{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:30px;
-}
-
-.feature{
-background:rgba(255,255,255,0.05);
-padding:40px 25px;
-border-radius:20px;
-text-align:center;
-backdrop-filter:blur(10px);
-}
-
-.feature h3{
-margin:20px 0;
-color:#c2a878;
-}
-
-/* TESTIMONIALS */
-
-.testimonials{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-gap:30px;
-}
-
-.testimonial{
-background:rgba(255,255,255,0.05);
-padding:30px;
-border-radius:20px;
-}
-
-/* CONTACT */
+/* FORMS */
 
 .contact{
 max-width:700px;
 margin:auto;
-background:rgba(255,255,255,0.05);
-padding:40px;
-border-radius:20px;
+background:rgba(255,255,255,.05);
+padding:35px;
+border-radius:25px;
 }
 
-.contact input,
-.contact textarea{
+input,select,textarea{
 width:100%;
-padding:15px;
-margin-bottom:20px;
+padding:14px;
+margin-bottom:15px;
 border:none;
-border-radius:10px;
-background:#1a1a1a;
+border-radius:12px;
+background:#111;
 color:white;
 }
 
-.contact button{
-width:100%;
-padding:15px;
-border:none;
-border-radius:10px;
-background:#c2a878;
-font-weight:700;
-cursor:pointer;
+/* GALLERY */
+
+.gallery img{
+height:330px;
 }
 
 /* FOOTER */
 
 footer{
-background:#050505;
+background:#000;
 padding:60px 8%;
 text-align:center;
+color:#999;
 }
 
 footer h2{
-margin-bottom:20px;
+color:white;
+margin-bottom:15px;
 letter-spacing:4px;
 }
 
-footer p{
-color:#999;
-margin:10px 0;
-}
-
-/* ANIMATIONS */
+/* ANIMATION */
 
 @keyframes fadeUp{
 from{
@@ -481,18 +275,18 @@ transform:translateY(0);
 
 /* MOBILE */
 
-@media(max-width:900px){
+@media(max-width:850px){
+
+nav ul{
+display:none;
+}
 
 .hero h1{
-font-size:3rem;
+font-size:2.8rem;
 }
 
 .about{
 grid-template-columns:1fr;
-}
-
-nav ul{
-display:none;
 }
 
 }
@@ -513,8 +307,8 @@ display:none;
 <ul>
 <li><a href="#">Home</a></li>
 <li><a href="#activities">Activities</a></li>
-<li><a href="#shop">Shop</a></li>
-<li><a href="#gallery">Gallery</a></li>
+<li><a href="#shop">Merchandise</a></li>
+<li><a href="#booking">Booking</a></li>
 <li><a href="#contact">Contact</a></li>
 </ul>
 
@@ -530,15 +324,15 @@ display:none;
 
 <p>ESCAPE • CONNECT • EXPLORE</p>
 
-<div class="buttons">
+<div class="btns">
 
-<button class="btn btn-primary">
-Book an Adventure
-</button>
+<a href="#activities" class="btn primary">
+Book Adventure
+</a>
 
-<button class="btn btn-secondary">
+<a href="#shop" class="btn secondary">
 Shop Merchandise
-</button>
+</a>
 
 </div>
 
@@ -548,22 +342,21 @@ Shop Merchandise
 
 <!-- ABOUT -->
 
-<section>
+<section class="about">
 
-<div class="about">
+<img src="adventuretribe-brand.png">
 
-<img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1974&auto=format&fit=crop">
+<div>
 
-<div class="about-text">
-
-<h2>MORE THAN AN ADVENTURE</h2>
+<h2 class="title">THE TRIBE</h2>
 
 <p>
-Adventure Tribe is a lifestyle movement built for people who want to escape ordinary life, connect with nature and people, and explore unforgettable experiences through curated outdoor adventures and premium streetwear.
-From hiking trips and camping weekends to premium tactical fashion, Adventure Tribe combines exploration, community, and style into one global experience.
+Adventure Tribe is a lifestyle movement built for explorers, creators,
+travelers, and people who want to escape ordinary life.
+We organize curated adventure experiences including hiking, camping,
+road trips, beach picnics, and outdoor activities while also releasing
+premium merchandise inspired by exploration culture.
 </p>
-
-</div>
 
 </div>
 
@@ -573,37 +366,40 @@ From hiking trips and camping weekends to premium tactical fashion, Adventure Tr
 
 <section id="activities">
 
-<h2 class="section-title">UPCOMING ADVENTURES</h2>
+<h2 class="title">UPCOMING EXPERIENCES</h2>
 
-<div class="activities">
+<div class="grid">
 
-<div class="activity-card">
-<img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1974&auto=format&fit=crop">
-<div class="activity-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Mountain Hiking</h3>
-<p>Explore scenic mountain trails with the tribe.</p>
-<div class="activity-price">KSh 4,500</div>
-<button class="ticket-btn">Buy Ticket</button>
+<p class="price">KSh 4,500</p>
+<button onclick="selectAdventure('Mountain Hiking')">
+Buy Ticket
+</button>
 </div>
 </div>
 
-<div class="activity-card">
-<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1974&auto=format&fit=crop">
-<div class="activity-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Camping Weekend</h3>
-<p>Bonfires, tents, music, and outdoor experiences.</p>
-<div class="activity-price">KSh 6,000</div>
-<button class="ticket-btn">Buy Ticket</button>
+<p class="price">KSh 6,000</p>
+<button onclick="selectAdventure('Camping Weekend')">
+Buy Ticket
+</button>
 </div>
 </div>
 
-<div class="activity-card">
-<img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=1974&auto=format&fit=crop">
-<div class="activity-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Beach Picnic</h3>
-<p>Relaxing beach vibes and community connection.</p>
-<div class="activity-price">KSh 3,000</div>
-<button class="ticket-btn">Buy Ticket</button>
+<p class="price">KSh 3,000</p>
+<button onclick="selectAdventure('Beach Picnic')">
+Buy Ticket
+</button>
 </div>
 </div>
 
@@ -611,101 +407,44 @@ From hiking trips and camping weekends to premium tactical fashion, Adventure Tr
 
 </section>
 
-<!-- BOOKING -->
-
-<section>
-
-<h2 class="section-title">BOOK YOUR ADVENTURE</h2>
-
-<div class="booking-form">
-
-<select>
-<option>Select Activity</option>
-<option>Mountain Hiking</option>
-<option>Camping Weekend</option>
-<option>Beach Picnic</option>
-</select>
-
-<input type="date">
-
-<input type="number" placeholder="Ticket Quantity">
-
-<input type="text" placeholder="Full Name">
-
-<input type="text" placeholder="Phone Number">
-
-<input type="email" placeholder="Email Address">
-
-<button onclick="bookAdventure()">Book Ticket</button>
-
-</div>
-
-</section>
-
-<!-- SHOP -->
+<!-- MERCH -->
 
 <section id="shop">
 
-<h2 class="section-title">MERCHANDISE</h2>
+<h2 class="title">MERCHANDISE</h2>
 
-<div class="products">
+<div class="grid">
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1974&auto=format&fit=crop">
-<div class="product-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Ninja Balaclava Hoodie</h3>
-<div class="product-price">KSh 6,500</div>
-
-<select>
-<option>Select Size</option>
-<option>S</option>
-<option>M</option>
-<option>L</option>
-<option>XL</option>
-</select>
-
-<button class="cart-btn" onclick="addToCart('Balaclava Hoodie',6500)">
+<p class="price">KSh 6,500</p>
+<button onclick="addToCart('Balaclava Hoodie',6500)">
 Add To Cart
 </button>
-
 </div>
 </div>
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1506629905607-d9c297d5b656?q=80&w=1974&auto=format&fit=crop">
-<div class="product-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Adventure Sweatpants</h3>
-<div class="product-price">KSh 4,500</div>
-
-<select>
-<option>Select Size</option>
-<option>S</option>
-<option>M</option>
-<option>L</option>
-<option>XL</option>
-</select>
-
-<button class="cart-btn" onclick="addToCart('Sweatpants',4500)">
+<p class="price">KSh 4,500</p>
+<button onclick="addToCart('Adventure Sweatpants',4500)">
 Add To Cart
 </button>
-
 </div>
 </div>
 
-<div class="product-card">
-<img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=1974&auto=format&fit=crop">
-<div class="product-info">
+<div class="card">
+<img src="adventuretribe-brand.png">
+<div class="info">
 <h3>Adventure Tribe Cap</h3>
-<div class="product-price">KSh 2,500</div>
-
-<select>
-<option>One Size</option>
-</select>
-
-<button class="cart-btn" onclick="addToCart('Cap',2500)">
+<p class="price">KSh 2,500</p>
+<button onclick="addToCart('Adventure Tribe Cap',2500)">
 Add To Cart
 </button>
-
 </div>
 </div>
 
@@ -717,19 +456,65 @@ Add To Cart
 
 <section>
 
-<h2 class="section-title">YOUR CART</h2>
+<h2 class="title">YOUR CART</h2>
 
-<div class="cart">
-
-<h3>Cart Items</h3>
+<div class="contact">
 
 <div id="cart-items">
-No items added yet.
+No items yet.
 </div>
 
-<div id="total">
+<br>
+
+<h3 id="total">
 Total: KSh 0
+</h3>
+
 </div>
+
+</section>
+
+<!-- BOOKING -->
+
+<section id="booking">
+
+<h2 class="title">BOOK / ORDER</h2>
+
+<div class="contact">
+
+<input type="text" id="customerName" placeholder="Full Name">
+
+<input type="text" id="customerPhone" placeholder="Phone Number">
+
+<input type="text" id="customerLocation" placeholder="Location">
+
+<select id="selectedAdventure">
+<option>Select Adventure</option>
+<option>Mountain Hiking</option>
+<option>Camping Weekend</option>
+<option>Beach Picnic</option>
+</select>
+
+<select id="selectedProduct">
+<option>Select Merchandise</option>
+<option>Balaclava Hoodie</option>
+<option>Adventure Sweatpants</option>
+<option>Adventure Tribe Cap</option>
+</select>
+
+<select id="size">
+<option>Select Size</option>
+<option>S</option>
+<option>M</option>
+<option>L</option>
+<option>XL</option>
+</select>
+
+<textarea id="notes" rows="4" placeholder="Extra notes"></textarea>
+
+<button onclick="sendAdventureOrder()">
+Send Booking / Order
+</button>
 
 </div>
 
@@ -737,87 +522,15 @@ Total: KSh 0
 
 <!-- GALLERY -->
 
-<section id="gallery">
-
-<h2 class="section-title">LOOKBOOK</h2>
-
-<div class="gallery">
-
-<img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1974&auto=format&fit=crop">
-
-<img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1974&auto=format&fit=crop">
-
-<img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1974&auto=format&fit=crop">
-
-<img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=1974&auto=format&fit=crop">
-
-</div>
-
-</section>
-
-<!-- FEATURES -->
-
 <section>
 
-<h2 class="section-title">WHY ADVENTURE TRIBE</h2>
+<h2 class="title">LOOKBOOK</h2>
 
-<div class="features">
+<div class="grid gallery">
 
-<div class="feature">
-<h3>Curated Adventures</h3>
-<p>Premium organized experiences built for explorers.</p>
-</div>
-
-<div class="feature">
-<h3>Premium Merchandise</h3>
-<p>Streetwear inspired by adventure culture.</p>
-</div>
-
-<div class="feature">
-<h3>Community Connection</h3>
-<p>Meet people with the same adventurous spirit.</p>
-</div>
-
-<div class="feature">
-<h3>International Experience</h3>
-<p>Global-level lifestyle branding and experiences.</p>
-</div>
-
-</div>
-
-</section>
-
-<!-- TESTIMONIALS -->
-
-<section>
-
-<h2 class="section-title">TRIBE STORIES</h2>
-
-<div class="testimonials">
-
-<div class="testimonial">
-<p>
-“The camping experience was unforgettable. Everything felt premium and well organized.”
-</p>
-<br>
-<strong>— Kelvin</strong>
-</div>
-
-<div class="testimonial">
-<p>
-“The hoodie quality is insane. Adventure Tribe feels international.”
-</p>
-<br>
-<strong>— Adrian</strong>
-</div>
-
-<div class="testimonial">
-<p>
-“The best community for people who love exploring and fashion.”
-</p>
-<br>
-<strong>— Malik</strong>
-</div>
+<img src="adventuretribe-brand.png">
+<img src="adventuretribe-brand.png">
+<img src="adventuretribe-brand.png">
 
 </div>
 
@@ -827,17 +540,14 @@ Total: KSh 0
 
 <section id="contact">
 
-<h2 class="section-title">JOIN THE TRIBE</h2>
+<h2 class="title">CONTACT</h2>
 
 <div class="contact">
 
-<input type="text" placeholder="Full Name">
-
-<input type="email" placeholder="Email Address">
-
-<textarea rows="5" placeholder="Tell us about your next adventure..."></textarea>
-
-<button>Join Adventure Tribe</button>
+<p>WhatsApp: 0795165085</p>
+<p>Email: thebrandguyagency@gmail.com</p>
+<p>Instagram: @adventuretribe</p>
+<p>TikTok: @adventuretribe</p>
 
 </div>
 
@@ -853,20 +563,11 @@ Total: KSh 0
 
 <br>
 
-<p>Instagram: @adventuretribe</p>
-<p>TikTok: @adventuretribe</p>
-<p>WhatsApp: +254 XXX XXX XXX</p>
-<p>Email: hello@adventuretribe.com</p>
-
-<br>
-
 <p>© 2026 Adventure Tribe. All Rights Reserved.</p>
 
 </footer>
 
 <script>
-
-/* LOADER */
 
 window.addEventListener("load",()=>{
 
@@ -878,30 +579,87 @@ document.getElementById("loader").style.display="none";
 
 });
 
-/* BOOKING */
-
-function bookAdventure(){
-alert("Your adventure booking has been received!");
-}
-
-/* CART */
-
 let total = 0;
+let cartList = [];
 
 function addToCart(product,price){
 
-const cartItems = document.getElementById("cart-items");
+const cart = document.getElementById("cart-items");
+
+if(cart.innerText === "No items yet."){
+cart.innerHTML = "";
+}
 
 const item = document.createElement("p");
 
-item.innerText = product + " - KSh " + price;
+item.innerHTML =
+product + " - KSh " + price;
 
-cartItems.appendChild(item);
+cart.appendChild(item);
+
+cartList.push(product + " - KSh " + price);
 
 total += price;
 
 document.getElementById("total").innerText =
 "Total: KSh " + total;
+
+}
+
+function selectAdventure(name){
+
+document.getElementById("selectedAdventure").value = name;
+
+window.location.href="#booking";
+
+}
+
+function sendAdventureOrder(){
+
+let name =
+document.getElementById("customerName").value;
+
+let phone =
+document.getElementById("customerPhone").value;
+
+let location =
+document.getElementById("customerLocation").value;
+
+let adventure =
+document.getElementById("selectedAdventure").value;
+
+let product =
+document.getElementById("selectedProduct").value;
+
+let size =
+document.getElementById("size").value;
+
+let notes =
+document.getElementById("notes").value;
+
+let message =
+"🔥 NEW ADVENTURE TRIBE BOOKING 🔥%0A%0A" +
+
+"Name: " + name + "%0A" +
+
+"Phone: " + phone + "%0A" +
+
+"Location: " + location + "%0A%0A" +
+
+"Adventure: " + adventure + "%0A" +
+
+"Merchandise: " + product + "%0A" +
+
+"Size: " + size + "%0A" +
+
+"Notes: " + notes + "%0A%0A" +
+
+"Cart Total: KSh " + total;
+
+window.open(
+"https://wa.me/254795165085?text=" + message,
+"_blank"
+);
 
 }
 
