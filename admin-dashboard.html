@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adventure Tribe Admin Dashboard</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:white}
+    header{background:#1a1a1a;padding:20px;display:flex;justify-content:space-between;align-items:center}
+    h1{color:orange;margin:0}
+    button{background:orange;border:none;padding:10px 15px;border-radius:8px;font-weight:bold;cursor:pointer}
+    .container{padding:25px}
+    .card{background:#1a1a1a;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid #333}
+    input,textarea{width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;background:#2b2b2b;color:white}
+    textarea{height:90px}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Adventure Tribe Admin</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Gallery Photos</h2>
+    <input type="text" placeholder="Photo title">
+    <input type="text" placeholder="Image URL">
+    <button>Add Photo</button>
+  </div>
+
+  <div class="card">
+    <h2>Merchandise / Catalogue</h2>
+    <input type="text" placeholder="Item name">
+    <input type="text" placeholder="Price e.g. KES 1500">
+    <textarea placeholder="Description"></textarea>
+    <input type="text" placeholder="Image URL">
+    <button>Add Item</button>
+  </div>
+
+  <div class="card">
+    <h2>Adventure Tribe Profile</h2>
+    <textarea placeholder="Update company profile"></textarea>
+    <button>Save Profile</button>
+  </div>
+
+  <div class="card">
+    <h2>Events / Adventure Updates</h2>
+    <input type="text" placeholder="Event title">
+    <input type="text" placeholder="Poster image URL">
+    <textarea placeholder="Event details"></textarea>
+    <button>Add Update</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_rDX_asPmDfPUKMGCptkkEeOGir65s45I",
+  authDomain: "adventure-tribe-41304.firebaseapp.com",
+  projectId: "adventure-tribe-41304",
+  storageBucket: "adventure-tribe-41304.firebasestorage.app",
+  messagingSenderId: "107688212796",
+  appId: "1:107688212796:web:7cd5491af04afe54ea0639",
+  measurementId: "G-6FFH6DE1J3"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "admin-login.html";
+  }
+});
+
+window.logout = function(){
+  signOut(auth).then(() => {
+    window.location.href = "admin-login.html";
+  });
+}
+</script>
+
+</body>
+</html>
