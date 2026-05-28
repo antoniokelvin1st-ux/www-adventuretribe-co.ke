@@ -65,9 +65,43 @@
 
     <button id="saveMerchBtn">Save / Replace Merchandise</button>
   </div>
+<div class="card">
+  <h2>Update Trip / Ticket Slot</h2>
 
+  <select id="tripCategory">
+    <option value="karuraForest">Karura Forest Experience</option>
+    <option value="ngongHills">Ngong Hills Sunrise Hike</option>
+    <option value="campNdunda">Camp Ndunda Escape</option>
+    <option value="mtLongonot">Mt Longonot Challenge</option>
+    <option value="suswa">SUSWA Adventure Experience</option>
+    <option value="naivasha">Naivasha Road Trip</option>
+  </select>
+
+  <input id="tripName" placeholder="Trip name">
+  <input id="tripPrice" placeholder="Price e.g. KES 950">
+  <input id="tripDifficulty" placeholder="Difficulty e.g. Easy">
+  <input id="tripInclusions" placeholder="Inclusions e.g. Hiking • Waterfall • Games">
+  <input id="tripImage" placeholder="Trip image URL">
+
+  <button id="saveTripBtn">Save / Replace Trip</button>
 </div>
+<div class="card">
+  <h2>Update Gallery Image Slot</h2>
 
+  <select id="galleryCategory">
+    <option value="gallery1">Gallery Image 1</option>
+    <option value="gallery2">Gallery Image 2</option>
+    <option value="gallery3">Gallery Image 3</option>
+    <option value="gallery4">Gallery Image 4</option>
+    <option value="gallery5">Gallery Image 5</option>
+    <option value="gallery6">Gallery Image 6</option>
+  </select>
+
+  <input id="galleryTitle" placeholder="Image title">
+  <input id="galleryImage" placeholder="Gallery image URL">
+
+  <button id="saveGalleryBtn">Save / Replace Gallery Image</button>
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -111,6 +145,34 @@ document.getElementById("saveMerchBtn").addEventListener("click", async () => {
   });
 
   alert("Merchandise updated successfully!");
+});
+
+document.getElementById("saveTripBtn").addEventListener("click", async () => {
+
+  const category = document.getElementById("tripCategory").value;
+
+  await set(ref(db, "trips/" + category), {
+    name: document.getElementById("tripName").value,
+    price: document.getElementById("tripPrice").value,
+    difficulty: document.getElementById("tripDifficulty").value,
+    inclusions: document.getElementById("tripInclusions").value,
+    image: document.getElementById("tripImage").value
+  });
+
+  alert("Trip updated successfully!");
+
+});
+document.getElementById("saveGalleryBtn").addEventListener("click", async () => {
+
+  const category = document.getElementById("galleryCategory").value;
+
+  await set(ref(db, "gallery/" + category), {
+    title: document.getElementById("galleryTitle").value,
+    image: document.getElementById("galleryImage").value
+  });
+
+  alert("Gallery image updated successfully!");
+
 });
 </script>
 
