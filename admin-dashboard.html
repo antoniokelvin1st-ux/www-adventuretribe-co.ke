@@ -9,20 +9,31 @@
     body{margin:0;font-family:Arial,sans-serif;background:#111;color:white}
     header{background:#1c1c1c;padding:18px 25px;display:flex;justify-content:space-between;align-items:center}
     h1{color:orange;margin:0}
-    button{background:orange;border:none;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
-    .logout{background:#ff3333;color:white}
     .container{padding:25px}
-    .card{background:#2b2b2b;padding:25px;border-radius:15px;box-shadow:0 0 18px rgba(255,140,0,.35);margin-bottom:25px}
+    .card{background:#2b2b2b;padding:25px;border-radius:15px;margin-bottom:25px}
     input,textarea,select{
       width:100%;
-      padding:13px;
+      padding:14px;
       margin:10px 0;
       border:none;
       border-radius:8px;
       box-sizing:border-box;
+      font-size:16px;
     }
     textarea{height:100px}
-    #status{color:lightgreen;font-weight:bold;margin-bottom:20px}
+    button{
+      background:orange;
+      color:black;
+      border:none;
+      padding:14px 20px;
+      border-radius:8px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:16px;
+    }
+    button:hover{opacity:.85}
+    .logout{background:red;color:white}
+    #status{color:lightgreen;font-weight:bold}
   </style>
 </head>
 
@@ -47,19 +58,12 @@
       <option value="brandedCap">Branded Cap</option>
     </select>
 
-    <input id="itemName" placeholder="Item name e.g. Balaclava Hoodie">
+    <input id="itemName" placeholder="Item name">
     <input id="itemPrice" placeholder="Price e.g. KES 4,500">
-    <textarea id="itemDesc" placeholder="Short description"></textarea>
+    <textarea id="itemDesc" placeholder="Description"></textarea>
     <input id="itemImage" placeholder="Image URL">
 
-    <button onclick="saveMerchandise()">Save / Replace Merchandise</button>
-  </div>
-
-  <div class="card">
-    <h2>Add Gallery Photo</h2>
-    <input id="photoTitle" placeholder="Photo title">
-    <input id="photoImage" placeholder="Image URL">
-    <button onclick="addGalleryPhoto()">Add Gallery Photo</button>
+    <button id="saveMerchBtn">Save / Replace Merchandise</button>
   </div>
 
 </div>
@@ -67,7 +71,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_rDX_asPmDfPUKMGCptkKeOGir65s45I",
@@ -76,8 +80,7 @@ const firebaseConfig = {
   projectId: "adventure-tribe-41304",
   storageBucket: "adventure-tribe-41304.appspot.com",
   messagingSenderId: "107688212796",
-  appId: "1:107688212796:web:7cd5491af04afe54ea0639",
-  measurementId: "G-6FFH6DE1J3"
+  appId: "1:107688212796:web:7cd5491af04afe54ea0639"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -97,7 +100,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   window.location.href = "admin-login.html";
 });
 
-window.saveMerchandise = async function(){
+document.getElementById("saveMerchBtn").addEventListener("click", async () => {
   const category = document.getElementById("itemCategory").value;
 
   await set(ref(db, "merchandise/" + category), {
@@ -108,16 +111,7 @@ window.saveMerchandise = async function(){
   });
 
   alert("Merchandise updated successfully!");
-};
-
-window.addGalleryPhoto = async function(){
-  await push(ref(db, "gallery"), {
-    title: document.getElementById("photoTitle").value,
-    image: document.getElementById("photoImage").value
-  });
-
-  alert("Gallery photo added successfully!");
-};
+});
 </script>
 
 </body>
