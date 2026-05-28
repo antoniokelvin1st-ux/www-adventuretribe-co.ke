@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adventure Tribe Admin Dashboard</title>
 
   <style>
     body{margin:0;font-family:Arial,sans-serif;background:#111;color:white}
     header{background:#1c1c1c;padding:18px 25px;display:flex;justify-content:space-between;align-items:center}
     h1{color:orange;margin:0}
-    button{background:orange;border:none;padding:10px 15px;border-radius:8px;font-weight:bold;cursor:pointer}
-    .container{padding:25px;display:grid;gap:20px}
-    .card{background:#222;padding:20px;border-radius:14px;box-shadow:0 0 15px rgba(255,140,0,.25)}
-    input,textarea{width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;background:#333;color:white;box-sizing:border-box}
-    textarea{height:90px}
-    .logout{background:#ff3b3b;color:white}
-    #status{color:lightgreen;font-weight:bold}
+    button{background:orange;border:none;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}
+    .logout{background:#ff3333;color:white}
+    .container{padding:25px}
+    .card{background:#2b2b2b;padding:25px;border-radius:15px;box-shadow:0 0 18px rgba(255,140,0,.35);margin-bottom:25px}
+    input,textarea,select{
+      width:100%;
+      padding:13px;
+      margin:10px 0;
+      border:none;
+      border-radius:8px;
+      box-sizing:border-box;
+    }
+    textarea{height:100px}
+    #status{color:lightgreen;font-weight:bold;margin-bottom:20px}
   </style>
 </head>
 
@@ -31,103 +38,86 @@
   <p id="status">Checking admin access...</p>
 
   <div class="card">
+    <h2>Update Merchandise Slot</h2>
+
+    <select id="itemCategory">
+      <option value="brandedHoodie">Branded Hoodie</option>
+      <option value="balaclavaHoodie">Balaclava Hoodie</option>
+      <option value="brandedTshirt">Branded T-Shirt</option>
+      <option value="brandedCap">Branded Cap</option>
+    </select>
+
+    <input id="itemName" placeholder="Item name e.g. Balaclava Hoodie">
+    <input id="itemPrice" placeholder="Price e.g. KES 4,500">
+    <textarea id="itemDesc" placeholder="Short description"></textarea>
+    <input id="itemImage" placeholder="Image URL">
+
+    <button onclick="saveMerchandise()">Save / Replace Merchandise</button>
+  </div>
+
+  <div class="card">
     <h2>Add Gallery Photo</h2>
     <input id="photoTitle" placeholder="Photo title">
-    <input id="photoUrl" placeholder="Image URL">
-    <button onclick="addPhoto()">Add Photo</button>
-  </div>
-
-  <div class="card">
-    <h2>Add Merchandise Item</h2>
-    <input id="itemName" placeholder="Item name">
-    <input id="itemPrice" placeholder="Price e.g. KES 1500">
-    <textarea id="itemDesc" placeholder="Description"></textarea>
-    <input id="itemImage" placeholder="Image URL">
-    <button onclick="addItem()">Add Item</button>
-  </div>
-
-  <div class="card">
-    <h2>Update Company Profile</h2>
-    <textarea id="profileText" placeholder="Write company profile update"></textarea>
-    <button onclick="saveProfile()">Save Profile</button>
-  </div>
-
-  <div class="card">
-    <h2>Add Event / Adventure Update</h2>
-    <input id="eventTitle" placeholder="Event title">
-    <input id="eventPoster" placeholder="Poster image URL">
-    <textarea id="eventDetails" placeholder="Event details"></textarea>
-    <button onclick="addEvent()">Add Event</button>
+    <input id="photoImage" placeholder="Image URL">
+    <button onclick="addGalleryPhoto()">Add Gallery Photo</button>
   </div>
 
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_rDX_asPmDfPUKMGCptkKeOGir65s45I",
-    authDomain: "adventure-tribe-41304.firebaseapp.com",
-    databaseURL: "https://adventure-tribe-41304-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "adventure-tribe-41304",
-    storageBucket: "adventure-tribe-41304.appspot.com",
-    messagingSenderId: "107688212796",
-    appId: "1:107688212796:web:7cd5491af04afe54ea0639",
-    measurementId: "G-6FFH6DE1J3"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyC_rDX_asPmDfPUKMGCptkKeOGir65s45I",
+  authDomain: "adventure-tribe-41304.firebaseapp.com",
+  databaseURL: "https://adventure-tribe-41304-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "adventure-tribe-41304",
+  storageBucket: "adventure-tribe-41304.appspot.com",
+  messagingSenderId: "107688212796",
+  appId: "1:107688212796:web:7cd5491af04afe54ea0639",
+  measurementId: "G-6FFH6DE1J3"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "admin-login.html";
-    } else {
-      document.getElementById("status").innerText = "Logged in as: " + user.email;
-    }
-  });
-
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    await signOut(auth);
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
     window.location.href = "admin-login.html";
+  } else {
+    document.getElementById("status").innerText = "Logged in as: " + user.email;
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "admin-login.html";
+});
+
+window.saveMerchandise = async function(){
+  const category = document.getElementById("itemCategory").value;
+
+  await set(ref(db, "merchandise/" + category), {
+    name: document.getElementById("itemName").value,
+    price: document.getElementById("itemPrice").value,
+    description: document.getElementById("itemDesc").value,
+    image: document.getElementById("itemImage").value
   });
 
-  window.addPhoto = async function(){
-    await push(ref(db, "gallery"), {
-      title: document.getElementById("photoTitle").value,
-      image: document.getElementById("photoUrl").value
-    });
-    alert("Photo added successfully!");
-  }
+  alert("Merchandise updated successfully!");
+};
 
-  window.addItem = async function(){
-    await push(ref(db, "merchandise"), {
-      name: document.getElementById("itemName").value,
-      price: document.getElementById("itemPrice").value,
-      description: document.getElementById("itemDesc").value,
-      image: document.getElementById("itemImage").value
-    });
-    alert("Item added successfully!");
-  }
+window.addGalleryPhoto = async function(){
+  await push(ref(db, "gallery"), {
+    title: document.getElementById("photoTitle").value,
+    image: document.getElementById("photoImage").value
+  });
 
-  window.saveProfile = async function(){
-    await set(ref(db, "profile"), {
-      text: document.getElementById("profileText").value
-    });
-    alert("Profile updated successfully!");
-  }
-
-  window.addEvent = async function(){
-    await push(ref(db, "events"), {
-      title: document.getElementById("eventTitle").value,
-      poster: document.getElementById("eventPoster").value,
-      details: document.getElementById("eventDetails").value
-    });
-    alert("Event added successfully!");
-  }
+  alert("Gallery photo added successfully!");
+};
 </script>
 
 </body>
