@@ -141,7 +141,7 @@
     .merch-card div.info { padding: 20px; }
     .merch-card p { font-weight: 900; color: var(--green); }
     .merch-card .description { color: #333; font-size: .9rem; font-weight: 500; margin-top: 8px; line-height: 1.5; }
-    .order-merch { margin-top: 15px; background: #25D366; color: white; display: inline-flex; padding: 10px 15px; border-radius: 999px; font-weight: 800; }
+    .order-merch { margin-top: 15px; background: #25D366; color: white; display: inline-flex; padding: 10px 15px; border-radius: 999px; font-weight: 800; border: none; cursor: pointer; font-family: inherit; font-size: .95rem; }
 
     .booking { background: linear-gradient(rgba(15,61,46,.9), rgba(5,7,6,.95)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat; }
     .booking-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 45px; align-items: center; }
@@ -568,23 +568,6 @@
       alert('Thank you! Your review has been added.');
     }
 
-    
-    function orderMerchandise(item, price) {
-      const size = prompt("Enter preferred size (S, M, L, XL):");
-      if (size === null) return;
-
-      const color = prompt("Enter preferred colour:");
-      if (color === null) return;
-
-      const quantity = prompt("Enter quantity:");
-      if (quantity === null) return;
-
-      const text = `Hello Adventure Tribe,%0A%0AI would like to order merchandise.%0A%0AItem: ${encodeURIComponent(item)}%0APrice: ${encodeURIComponent(price)}%0ASize: ${encodeURIComponent(size)}%0AColour: ${encodeURIComponent(color)}%0AQuantity: ${encodeURIComponent(quantity)}`;
-
-      window.open(`https://wa.me/254716025778?text=${text}`, '_blank');
-    }
-
-
     function sendWhatsApp(event) {
       event.preventDefault();
       const name = document.getElementById('name').value;
@@ -665,7 +648,7 @@
 
       merchContainer.innerHTML = merchandiseOrder.map((key) => {
         const item = merchandise[key];
-        const orderMessage = encodeURIComponent(`Hello Adventure Tribe, I want to order ${item.name} for ${cleanPrice(item.price)}.`);
+
         return `
           <div class="merch-card reveal active">
             <div class="product-img">
@@ -676,13 +659,57 @@
               <h3>${item.name}</h3>
               <p>${cleanPrice(item.price)}</p>
               ${item.description ? `<div class="description">${item.description}</div>` : ""}
-              <a class="order-merch" href="https://wa.me/254716025778?text=${orderMessage}" target="_blank">
-                Order on WhatsApp
-              </a>
+              <button
+                class="order-merch"
+                type="button"
+                data-name="${item.name}"
+                data-price="${cleanPrice(item.price)}"
+              >
+                Order Now
+              </button>
             </div>
           </div>
         `;
       }).join("");
+
+      document.querySelectorAll(".order-merch").forEach((button) => {
+        button.addEventListener("click", () => {
+          const itemName = button.dataset.name;
+          const itemPrice = button.dataset.price;
+
+          const customerName = prompt("Enter your full name:");
+          if (customerName === null) return;
+
+          const phoneNumber = prompt("Enter your phone number:");
+          if (phoneNumber === null) return;
+
+          const size = prompt("Enter preferred size (S, M, L, XL, XXL or Custom):");
+          if (size === null) return;
+
+          const colour = prompt("Enter preferred colour:");
+          if (colour === null) return;
+
+          const quantity = prompt("Enter quantity:");
+          if (quantity === null) return;
+
+          const notes = prompt("Any extra request? Example: delivery location, payment question, or design request:");
+          if (notes === null) return;
+
+          const message =
+            `Hello Adventure Tribe,%0A%0A` +
+            `I would like to place a merchandise order.%0A%0A` +
+            `Item: ${encodeURIComponent(itemName)}%0A` +
+            `Price: ${encodeURIComponent(itemPrice)}%0A` +
+            `Size: ${encodeURIComponent(size)}%0A` +
+            `Colour: ${encodeURIComponent(colour)}%0A` +
+            `Quantity: ${encodeURIComponent(quantity)}%0A` +
+            `Customer Name: ${encodeURIComponent(customerName)}%0A` +
+            `Phone Number: ${encodeURIComponent(phoneNumber)}%0A` +
+            `Extra Request: ${encodeURIComponent(notes)}`;
+
+          window.open(`https://wa.me/254716025778?text=${message}`, "_blank");
+        });
+      });
     }
 
     renderMerchandise(defaultMerchandise);
