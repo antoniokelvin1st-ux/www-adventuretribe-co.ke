@@ -679,12 +679,47 @@
     event.target.reset();
   };
 
-  window.saveSubscriber=async function(){
-    const email=document.getElementById("newsletterEmail").value.trim();
-    if(!email)return alert("Enter email address");
-    await set(push(ref(db,"subscribers")),{email,createdAt:new Date().toLocaleString()});
-    alert("Subscribed successfully!");
-    document.getElementById("newsletterEmail").value="";
+ window.saveSubscriber = async function () {
+
+    const email = document.getElementById("newsletterEmail").value.trim();
+
+    if(email===""){
+        alert("Please enter your email.");
+        return;
+    }
+
+    // Basic email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if(!emailPattern.test(email)){
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    try{
+
+        await set(
+            push(ref(db,"subscribers")),
+            {
+                email: email,
+                subscribed: true,
+                createdAt: new Date().toISOString()
+            }
+        );
+
+        alert("🎉 Thank you for subscribing to Adventure Tribe!");
+
+        document.getElementById("newsletterEmail").value="";
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Failed to subscribe.");
+
+    }
+
+}
   };
 
   renderMerchandise(defaultMerchandise);
