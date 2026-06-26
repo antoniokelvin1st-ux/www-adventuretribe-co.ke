@@ -9,13 +9,15 @@
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;background:#111;color:#fff}
     header{background:#1c1c1c;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-    h1{color:orange}
-    h2{margin-bottom:15px}
+    h1{color:orange;font-size:24px}
+    h2{margin-bottom:15px;color:#fff}
+    h3{margin-bottom:10px;color:orange}
     .container{padding:25px;display:grid;gap:25px}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
     .card{background:#2b2b2b;padding:25px;border-radius:15px}
     input,textarea,select{width:100%;padding:14px;margin:8px 0;border:none;border-radius:8px;font-size:15px}
-    textarea{height:90px}
+    textarea{height:100px}
     button{background:orange;color:#111;border:none;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:8px}
     button:hover{opacity:.85}
     .logout,.delete{background:red;color:white}
@@ -27,11 +29,16 @@
     .booking-item{grid-template-columns:1fr auto}
     .item img{width:80px;height:65px;object-fit:cover;border-radius:8px;background:#333}
     .actions{display:flex;gap:8px;flex-wrap:wrap}
-    .small{font-size:13px;color:#bbb}
+    .small{font-size:13px;color:#bbb;line-height:1.6}
     .preview{width:100%;height:180px;object-fit:cover;border-radius:12px;background:#222;margin-top:10px;display:none}
     .badge{display:inline-block;padding:5px 10px;border-radius:999px;background:orange;color:#111;font-size:12px;font-weight:bold;margin-top:6px}
     .badge.done-badge{background:#20c997}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}.item{grid-template-columns:1fr}.item img{width:100%;height:180px}}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap}
+    .tab{background:#333;color:white}
+    .tab.active{background:orange;color:#111}
+    .section{display:none}
+    .section.active{display:grid;gap:25px}
+    @media(max-width:900px){.grid,.grid-2{grid-template-columns:1fr}.item{grid-template-columns:1fr}.item img{width:100%;height:180px}}
   </style>
 </head>
 
@@ -46,62 +53,114 @@
   <p class="status" id="status">Checking admin access...</p>
 
   <div class="card">
-    <h2>📅 Bookings Manager</h2>
-    <div class="items" id="bookingsList"></div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <h2>🏔 Add / Update Trip</h2>
-      <input id="tripId" placeholder="Trip ID e.g suswa, karuraForest">
-      <input id="tripName" placeholder="Trip name">
-      <input id="tripPrice" placeholder="Price e.g KES 1,950">
-      <input id="tripDifficulty" placeholder="Difficulty e.g Easy, Premium">
-      <input id="tripInclusions" placeholder="Inclusions e.g Road Trip • Caves • Views">
-      <select id="tripCategory">
-        <option value="hike">Hike</option>
-        <option value="camp">Camping</option>
-        <option value="road">Road Trip</option>
-      </select>
-      <input type="file" id="tripImageFile" accept="image/*">
-      <img id="tripPreview" class="preview">
-      <button id="saveTripBtn">Save Trip</button>
-    </div>
-
-    <div class="card">
-      <h2>👕 Add / Update Merchandise</h2>
-      <input id="merchId" placeholder="Merch ID e.g brandedHoodie">
-      <input id="merchName" placeholder="Item name">
-      <input id="merchPrice" placeholder="Price e.g KES 3,500">
-      <textarea id="merchDesc" placeholder="Description"></textarea>
-      <input type="file" id="merchImageFile" accept="image/*">
-      <img id="merchPreview" class="preview">
-      <button id="saveMerchBtn">Save Merchandise</button>
-    </div>
-
-    <div class="card">
-      <h2>🖼 Add / Update Gallery</h2>
-      <input id="galleryId" placeholder="Gallery ID e.g gallery1">
-      <input id="galleryTitle" placeholder="Image title">
-      <input type="file" id="galleryImageFile" accept="image/*">
-      <img id="galleryPreview" class="preview">
-      <button id="saveGalleryBtn">Save Gallery Image</button>
+    <div class="tabs">
+      <button class="tab active" data-tab="settings">Website Settings</button>
+      <button class="tab" data-tab="content">Content</button>
+      <button class="tab" data-tab="bookings">Bookings</button>
+      <button class="tab" data-tab="lists">Saved Items</button>
     </div>
   </div>
 
-  <div class="card">
-    <h2>🏔 Trips</h2>
-    <div class="items" id="tripsList"></div>
+  <div class="section active" id="settings">
+    <div class="grid-2">
+      <div class="card">
+        <h2>🌍 Website Settings</h2>
+        <input id="companyName" placeholder="Company Name">
+        <input id="slogan" placeholder="Slogan">
+        <textarea id="aboutText" placeholder="About Adventure Tribe"></textarea>
+        <textarea id="mission" placeholder="Mission"></textarea>
+        <textarea id="vision" placeholder="Vision"></textarea>
+        <button id="saveWebsiteBtn">Save Website Settings</button>
+      </div>
+
+      <div class="card">
+        <h2>📞 Contact Details</h2>
+        <input id="phone" placeholder="Phone Number">
+        <input id="whatsapp" placeholder="WhatsApp Number e.g 254716025778">
+        <input id="email" placeholder="Email Address">
+        <input id="location" placeholder="Location / Address">
+        <input id="mapsUrl" placeholder="Google Maps URL">
+        <button id="saveContactBtn">Save Contacts</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📱 Social Media Links</h2>
+      <div class="grid-2">
+        <input id="instagram" placeholder="Instagram URL">
+        <input id="tiktok" placeholder="TikTok URL">
+        <input id="facebook" placeholder="Facebook URL">
+        <input id="youtube" placeholder="YouTube URL">
+        <input id="xTwitter" placeholder="X / Twitter URL">
+        <input id="linkedin" placeholder="LinkedIn URL">
+      </div>
+      <button id="saveSocialBtn">Save Social Links</button>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>👕 Merchandise</h2>
-    <div class="items" id="merchList"></div>
+  <div class="section" id="content">
+    <div class="grid">
+      <div class="card">
+        <h2>🏔 Add / Update Trip</h2>
+        <input id="tripId" placeholder="Trip ID e.g suswa, karuraForest">
+        <input id="tripName" placeholder="Trip name">
+        <input id="tripPrice" placeholder="Price e.g KES 1,950">
+        <input id="tripDifficulty" placeholder="Difficulty e.g Easy, Premium">
+        <input id="tripInclusions" placeholder="Inclusions e.g Road Trip • Caves • Views">
+        <select id="tripCategory">
+          <option value="hike">Hike</option>
+          <option value="camp">Camping</option>
+          <option value="road">Road Trip</option>
+        </select>
+        <input type="file" id="tripImageFile" accept="image/*">
+        <img id="tripPreview" class="preview">
+        <button id="saveTripBtn">Save Trip</button>
+      </div>
+
+      <div class="card">
+        <h2>👕 Add / Update Merchandise</h2>
+        <input id="merchId" placeholder="Merch ID e.g brandedHoodie">
+        <input id="merchName" placeholder="Item name">
+        <input id="merchPrice" placeholder="Price e.g KES 3,500">
+        <textarea id="merchDesc" placeholder="Description"></textarea>
+        <input type="file" id="merchImageFile" accept="image/*">
+        <img id="merchPreview" class="preview">
+        <button id="saveMerchBtn">Save Merchandise</button>
+      </div>
+
+      <div class="card">
+        <h2>🖼 Add / Update Gallery</h2>
+        <input id="galleryId" placeholder="Gallery ID e.g gallery1">
+        <input id="galleryTitle" placeholder="Image title">
+        <input type="file" id="galleryImageFile" accept="image/*">
+        <img id="galleryPreview" class="preview">
+        <button id="saveGalleryBtn">Save Gallery Image</button>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>🖼 Gallery</h2>
-    <div class="items" id="galleryList"></div>
+  <div class="section" id="bookings">
+    <div class="card">
+      <h2>📅 Bookings Manager</h2>
+      <div class="items" id="bookingsList"></div>
+    </div>
+  </div>
+
+  <div class="section" id="lists">
+    <div class="card">
+      <h2>🏔 Trips</h2>
+      <div class="items" id="tripsList"></div>
+    </div>
+
+    <div class="card">
+      <h2>👕 Merchandise</h2>
+      <div class="items" id="merchList"></div>
+    </div>
+
+    <div class="card">
+      <h2>🖼 Gallery</h2>
+      <div class="items" id="galleryList"></div>
+    </div>
   </div>
 </div>
 
@@ -138,6 +197,15 @@ onAuthStateChanged(auth, (user) => {
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "admin-login.html";
+});
+
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+    button.classList.add("active");
+    document.getElementById(button.dataset.tab).classList.add("active");
+  });
 });
 
 function cleanId(value) {
@@ -188,6 +256,40 @@ async function uploadToCloudinary(file) {
 
   return data.secure_url;
 }
+
+document.getElementById("saveWebsiteBtn").addEventListener("click", async () => {
+  await update(ref(db, "settings/website"), {
+    companyName: document.getElementById("companyName").value,
+    slogan: document.getElementById("slogan").value,
+    aboutText: document.getElementById("aboutText").value,
+    mission: document.getElementById("mission").value,
+    vision: document.getElementById("vision").value
+  });
+  alert("Website settings saved!");
+});
+
+document.getElementById("saveContactBtn").addEventListener("click", async () => {
+  await update(ref(db, "settings/contact"), {
+    phone: document.getElementById("phone").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    email: document.getElementById("email").value,
+    location: document.getElementById("location").value,
+    mapsUrl: document.getElementById("mapsUrl").value
+  });
+  alert("Contact details saved!");
+});
+
+document.getElementById("saveSocialBtn").addEventListener("click", async () => {
+  await update(ref(db, "settings/socials"), {
+    instagram: document.getElementById("instagram").value,
+    tiktok: document.getElementById("tiktok").value,
+    facebook: document.getElementById("facebook").value,
+    youtube: document.getElementById("youtube").value,
+    xTwitter: document.getElementById("xTwitter").value,
+    linkedin: document.getElementById("linkedin").value
+  });
+  alert("Social links saved!");
+});
 
 document.getElementById("saveTripBtn").addEventListener("click", async () => {
   try {
@@ -258,6 +360,36 @@ document.getElementById("saveGalleryBtn").addEventListener("click", async () => 
   }
 });
 
+function loadSettings() {
+  onValue(ref(db, "settings/website"), snapshot => {
+    const data = snapshot.val() || {};
+    document.getElementById("companyName").value = data.companyName || "";
+    document.getElementById("slogan").value = data.slogan || "";
+    document.getElementById("aboutText").value = data.aboutText || "";
+    document.getElementById("mission").value = data.mission || "";
+    document.getElementById("vision").value = data.vision || "";
+  });
+
+  onValue(ref(db, "settings/contact"), snapshot => {
+    const data = snapshot.val() || {};
+    document.getElementById("phone").value = data.phone || "";
+    document.getElementById("whatsapp").value = data.whatsapp || "";
+    document.getElementById("email").value = data.email || "";
+    document.getElementById("location").value = data.location || "";
+    document.getElementById("mapsUrl").value = data.mapsUrl || "";
+  });
+
+  onValue(ref(db, "settings/socials"), snapshot => {
+    const data = snapshot.val() || {};
+    document.getElementById("instagram").value = data.instagram || "";
+    document.getElementById("tiktok").value = data.tiktok || "";
+    document.getElementById("facebook").value = data.facebook || "";
+    document.getElementById("youtube").value = data.youtube || "";
+    document.getElementById("xTwitter").value = data.xTwitter || "";
+    document.getElementById("linkedin").value = data.linkedin || "";
+  });
+}
+
 function renderList(path, containerId, type) {
   const container = document.getElementById(containerId);
 
@@ -327,9 +459,7 @@ function renderBookings() {
 }
 
 window.confirmBooking = async function(id) {
-  await update(ref(db, "bookings/" + id), {
-    status: "confirmed"
-  });
+  await update(ref(db, "bookings/" + id), { status: "confirmed" });
   alert("Booking marked as confirmed");
 };
 
@@ -342,20 +472,24 @@ window.deleteItem = async function(path, id) {
 window.editItem = function(type, id) {
   if (type === "trip") {
     document.getElementById("tripId").value = id;
+    document.querySelector('[data-tab="content"]').click();
     alert("Trip ID loaded. Edit details and save again.");
   }
 
   if (type === "merch") {
     document.getElementById("merchId").value = id;
+    document.querySelector('[data-tab="content"]').click();
     alert("Merch ID loaded. Edit details and save again.");
   }
 
   if (type === "gallery") {
     document.getElementById("galleryId").value = id;
+    document.querySelector('[data-tab="content"]').click();
     alert("Gallery ID loaded. Edit details and save again.");
   }
 };
 
+loadSettings();
 renderBookings();
 renderList("trips", "tripsList", "trip");
 renderList("merchandise", "merchList", "merch");
