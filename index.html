@@ -545,33 +545,67 @@
   });
 
   function renderTrips(data){
-    const trips={...defaultTrips,...(data||{})};
-    const container=document.getElementById("tripContainer");
-    const tripSelect=document.getElementById("trip");
-    tripSelect.innerHTML=`<option value="">Select Trip</option>`;
+  const container = document.getElementById("tripContainer");
+  const tripSelect = document.getElementById("trip");
 
-    container.innerHTML=Object.entries(trips).map(([key,trip])=>{
-      const image=imageOrDefault(trip.image,defaultTrips[key]?.image||defaultTrips.suswa.image);
-      const option=document.createElement("option");
-      option.value=trip.name;option.textContent=trip.name;tripSelect.appendChild(option);
-      return `<div class="trip-card reveal active" data-category="${safe(trip.category||"hike")}">
+  tripSelect.innerHTML = `<option value="">Select Trip</option>`;
+
+  if (!data || Object.keys(data).length === 0) {
+    container.innerHTML = `
+      <div style="grid-column:1/-1;background:rgba(255,255,255,.08);padding:30px;border-radius:24px;border:1px solid rgba(255,255,255,.14);">
+        <h3>No upcoming adventures yet</h3>
+        <p style="color:#d7cec2;margin-top:10px;">
+          New trips will appear here once they are added from the admin dashboard.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  const trips = data;
+
+  container.innerHTML = Object.entries(trips).map(([key, trip]) => {
+    const image = imageOrDefault(
+      trip.image,
+      "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=900&q=80"
+    );
+
+    const option = document.createElement("option");
+    option.value = trip.name;
+    option.textContent = trip.name;
+    tripSelect.appendChild(option);
+
+    return `
+      <div class="trip-card reveal active" data-category="${safe(trip.category || "hike")}">
         <div class="trip-img" onclick="bookTrip('${safe(trip.name)}')">
           <img src="${safe(image)}" alt="${safe(trip.name)}">
-          <span class="difficulty">${safe(trip.difficulty||"Adventure")}</span>
+          <span class="difficulty">${safe(trip.difficulty || "Adventure")}</span>
         </div>
+
         <div class="trip-body">
           <h3>${safe(trip.name)}</h3>
+
           <div class="trip-meta">
-            <div class="trip-date"><label><i class="fa-regular fa-calendar"></i> Pick Date</label><input type="date" onchange="setTripDate(this)"></div>
-            <span><i class="fa-solid fa-check"></i> ${safe(trip.inclusions||"Adventure Experience")}</span>
+            <div class="trip-date">
+              <label><i class="fa-regular fa-calendar"></i> Pick Date</label>
+              <input type="date" onchange="setTripDate(this)">
+            </div>
+
+            <span><i class="fa-solid fa-check"></i> ${safe(trip.inclusions || "Adventure Experience")}</span>
           </div>
+
           <div class="price">${safe(cleanPrice(trip.price))}</div>
-          <a href="#booking" onclick="bookTrip('${safe(trip.name)}')" class="btn btn-primary">Book Now</a>
+
+          <a href="#booking" onclick="bookTrip('${safe(trip.name)}')" class="btn btn-primary">
+            Book Now
+          </a>
         </div>
-      </div>`;
-    }).join("");
-    setupFilters();
-  }
+      </div>
+    `;
+  }).join("");
+
+  setupFilters();
+}
 
   function renderMerchandise(data){
     const items={...defaultMerchandise,...(data||{})};
@@ -653,7 +687,6 @@
     document.getElementById("newsletterEmail").value="";
   };
 
-  renderTrips(defaultTrips);
   renderMerchandise(defaultMerchandise);
   renderGallery(defaultGallery);
 
