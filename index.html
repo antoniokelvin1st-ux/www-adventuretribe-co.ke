@@ -385,7 +385,7 @@
       <h3>Email Updates</h3>
       <p>Get updates about upcoming adventures and tribe events.</p>
       <input type="email" id="newsletterEmail" placeholder="Your email">
-      <button class="btn btn-primary" type="button" onclick="saveSubscriber()">Subscribe</button>
+      <button class="btn btn-primary" type="button" id="subscribeBtn">Subscribe</button>
     </div>
   </div>
 
@@ -679,59 +679,55 @@
     event.target.reset();
   };
 
- window.saveSubscriber = async function () {
+  async function saveSubscriber() {
+    const emailInput = document.getElementById("newsletterEmail");
+    const subscribeBtn = document.getElementById("subscribeBtn");
+    const email = emailInput.value.trim();
 
-    const email = document.getElementById("newsletterEmail").value.trim();
-
-    if(email===""){
-        alert("Please enter your email.");
-        return;
+    if (!email) {
+      alert("Please enter your email.");
+      return;
     }
 
-    // Basic email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if(!emailPattern.test(email)){
-        alert("Please enter a valid email address.");
-        return;
+    if (!emailPattern.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
     }
 
-    try{
+    try {
+      subscribeBtn.disabled = true;
+      subscribeBtn.textContent = "Subscribing...";
 
-        await set(
-            push(ref(db,"subscribers")),
-            {
-                email: email,
-                subscribed: true,
-                createdAt: new Date().toISOString()
-            }
-        );
+      await set(push(ref(db, "subscribers")), {
+        email: email,
+        subscribed: true,
+        source: "website_footer",
+        createdAt: new Date().toISOString()
+      });
 
-        alert("🎉 Thank you for subscribing to Adventure Tribe!");
-
-        document.getElementById("newsletterEmail").value="";
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Failed to subscribe.");
-
+      alert("🎉 Thank you for subscribing to Adventure Tribe!");
+      emailInput.value = "";
+    } catch (error) {
+      console.error("Subscriber save error:", error);
+      alert("Failed to subscribe. Please try again.");
+    } finally {
+      subscribeBtn.disabled = false;
+      subscribeBtn.textContent = "Subscribe";
     }
+  }
 
-};
+  window.saveSubscriber = saveSubscriber;
 
-  onValue(ref(db,"trips"), snapshot => {
-    renderTrips(snapshot.val());
-  });
+  document.getElementById("subscribeBtn").addEventListener("click", saveSubscriber);
 
-  onValue(ref(db,"merchandise"), snapshot => {
-    renderMerchandise(snapshot.val());
-  });
+  renderMerchandise(defaultMerchandise);
+  renderGallery(defaultGallery);
 
-  onValue(ref(db,"gallery"), snapshot => {
-    renderGallery(snapshot.val());
-  });
+  onValue(ref(db,"trips"),snapshot=>renderTrips(snapshot.val()));
+  onValue(ref(db,"merchandise"),snapshot=>renderMerchandise(snapshot.val()));
+  onValue(ref(db,"gallery"),snapshot=>renderGallery(snapshot.val()));
 </script>
 
 </body>
