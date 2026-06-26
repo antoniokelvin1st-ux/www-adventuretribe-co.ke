@@ -20,13 +20,17 @@
     button:hover{opacity:.85}
     .logout,.delete{background:red;color:white}
     .edit{background:#00c2ff;color:#111}
+    .done{background:#20c997;color:#111}
     .status{color:lightgreen;font-weight:bold;margin-bottom:10px}
     .items{display:grid;gap:12px;margin-top:18px}
     .item{background:#1b1b1b;padding:14px;border-radius:12px;display:grid;grid-template-columns:80px 1fr auto;gap:12px;align-items:center}
+    .booking-item{grid-template-columns:1fr auto}
     .item img{width:80px;height:65px;object-fit:cover;border-radius:8px;background:#333}
     .actions{display:flex;gap:8px;flex-wrap:wrap}
     .small{font-size:13px;color:#bbb}
     .preview{width:100%;height:180px;object-fit:cover;border-radius:12px;background:#222;margin-top:10px;display:none}
+    .badge{display:inline-block;padding:5px 10px;border-radius:999px;background:orange;color:#111;font-size:12px;font-weight:bold;margin-top:6px}
+    .badge.done-badge{background:#20c997}
     @media(max-width:900px){.grid{grid-template-columns:1fr}.item{grid-template-columns:1fr}.item img{width:100%;height:180px}}
   </style>
 </head>
@@ -41,8 +45,12 @@
 <div class="container">
   <p class="status" id="status">Checking admin access...</p>
 
-  <div class="grid">
+  <div class="card">
+    <h2>📅 Bookings Manager</h2>
+    <div class="items" id="bookingsList"></div>
+  </div>
 
+  <div class="grid">
     <div class="card">
       <h2>🏔 Add / Update Trip</h2>
       <input id="tripId" placeholder="Trip ID e.g suswa, karuraForest">
@@ -79,7 +87,6 @@
       <img id="galleryPreview" class="preview">
       <button id="saveGalleryBtn">Save Gallery Image</button>
     </div>
-
   </div>
 
   <div class="card">
@@ -101,7 +108,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_rDX_asPmDfPUKMGCptkKeOGir65s45I",
@@ -124,11 +131,8 @@ const db = getDatabase(app);
 const statusBox = document.getElementById("status");
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "admin-login.html";
-  } else {
-    statusBox.innerText = "Logged in as: " + user.email;
-  }
+  if (!user) window.location.href = "admin-login.html";
+  else statusBox.innerText = "Logged in as: " + user.email;
 });
 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
@@ -137,10 +141,13 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 });
 
 function cleanId(value) {
-  return String(value || "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9-_]/g, "");
+  return String(value || "").trim().replace(/\s+/g, "-").replace(/[^a-zA-Z0-9-_]/g, "");
+}
+
+function safe(value) {
+  return String(value || "").replace(/[&<>'"]/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"
+  }[char]));
 }
 
 function showPreview(fileInputId, previewId) {
@@ -200,7 +207,7 @@ document.getElementById("saveTripBtn").addEventListener("click", async () => {
 
     if (image) tripData.image = image;
 
-    await set(ref(db, "trips/" + id), tripData);
+    await update(ref(db, "trips/" + id), tripData);
     alert("Trip saved successfully!");
   } catch (error) {
     alert(error.message);
@@ -223,7 +230,7 @@ document.getElementById("saveMerchBtn").addEventListener("click", async () => {
 
     if (image) merchData.image = image;
 
-    await set(ref(db, "merchandise/" + id), merchData);
+    await update(ref(db, "merchandise/" + id), merchData);
     alert("Merchandise saved successfully!");
   } catch (error) {
     alert(error.message);
@@ -240,7 +247,7 @@ document.getElementById("saveGalleryBtn").addEventListener("click", async () => 
 
     const image = await uploadToCloudinary(file);
 
-    await set(ref(db, "gallery/" + id), {
+    await update(ref(db, "gallery/" + id), {
       title: document.getElementById("galleryTitle").value,
       image
     });
@@ -250,16 +257,6 @@ document.getElementById("saveGalleryBtn").addEventListener("click", async () => 
     alert(error.message);
   }
 });
-
-function safe(value) {
-  return String(value || "").replace(/[&<>'"]/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    "'":"&#39;",
-    '"':"&quot;"
-  }[char]));
-}
 
 function renderList(path, containerId, type) {
   const container = document.getElementById(containerId);
@@ -291,6 +288,51 @@ function renderList(path, containerId, type) {
   });
 }
 
+function renderBookings() {
+  const container = document.getElementById("bookingsList");
+
+  onValue(ref(db, "bookings"), (snapshot) => {
+    const data = snapshot.val() || {};
+    const entries = Object.entries(data).reverse();
+
+    if (!entries.length) {
+      container.innerHTML = `<p class="small">No bookings yet.</p>`;
+      return;
+    }
+
+    container.innerHTML = entries.map(([id, booking]) => `
+      <div class="item booking-item">
+        <div>
+          <strong>${safe(booking.name)}</strong>
+          <p class="small">Phone: ${safe(booking.phone)}</p>
+          <p class="small">Email: ${safe(booking.email || "Not provided")}</p>
+          <p class="small">Trip: ${safe(booking.trip)}</p>
+          <p class="small">Date: ${safe(booking.date || "Not selected")}</p>
+          <p class="small">Tickets: ${safe(booking.tickets)}</p>
+          <p class="small">Payment: ${safe(booking.payment)}</p>
+          <p class="small">Message: ${safe(booking.message || "")}</p>
+          <p class="small">Time: ${safe(booking.createdAt || "")}</p>
+          <span class="badge ${booking.status === "confirmed" ? "done-badge" : ""}">
+            ${safe(booking.status || "new")}
+          </span>
+        </div>
+
+        <div class="actions">
+          <button class="done" onclick="confirmBooking('${safe(id)}')">Mark Confirmed</button>
+          <button class="delete" onclick="deleteItem('bookings','${safe(id)}')">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  });
+}
+
+window.confirmBooking = async function(id) {
+  await update(ref(db, "bookings/" + id), {
+    status: "confirmed"
+  });
+  alert("Booking marked as confirmed");
+};
+
 window.deleteItem = async function(path, id) {
   if (!confirm("Delete this item?")) return;
   await remove(ref(db, path + "/" + id));
@@ -314,6 +356,7 @@ window.editItem = function(type, id) {
   }
 };
 
+renderBookings();
 renderList("trips", "tripsList", "trip");
 renderList("merchandise", "merchList", "merch");
 renderList("gallery", "galleryList", "gallery");
