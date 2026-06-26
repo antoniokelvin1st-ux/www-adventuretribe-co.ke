@@ -719,15 +719,19 @@
 
     }
 
-}
-  };
+};
 
-  renderMerchandise(defaultMerchandise);
-  renderGallery(defaultGallery);
+  onValue(ref(db,"trips"), snapshot => {
+    renderTrips(snapshot.val());
+  });
 
-  onValue(ref(db,"trips"),snapshot=>renderTrips(snapshot.val()));
-  onValue(ref(db,"merchandise"),snapshot=>renderMerchandise(snapshot.val()));
-  onValue(ref(db,"gallery"),snapshot=>renderGallery(snapshot.val()));
+  onValue(ref(db,"merchandise"), snapshot => {
+    renderMerchandise(snapshot.val());
+  });
+
+  onValue(ref(db,"gallery"), snapshot => {
+    renderGallery(snapshot.val());
+  });
 </script>
 
 </body>
