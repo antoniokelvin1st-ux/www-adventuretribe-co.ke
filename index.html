@@ -85,6 +85,17 @@ const defaultReviews=[{name:"Michelle",rating:5,text:"The vibe was amazing. It f
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const firebaseConfig={apiKey:"AIzaSyC_rDX_asPmDfPUKMGCptkKeOGir65s45I",authDomain:"adventure-tribe-41304.firebaseapp.com",databaseURL:"https://adventure-tribe-41304-default-rtdb.europe-west1.firebasedatabase.app",projectId:"adventure-tribe-41304",storageBucket:"adventure-tribe-41304.appspot.com",messagingSenderId:"107688212796",appId:"1:107688212796:web:7cd5491af04afe54ea0639",measurementId:"G-6FFH6DE1J3"};const app=initializeApp(firebaseConfig);const db=getDatabase(app);let tripsCache={},bookingsCache={};
+const trip=document.getElementById("trip");
+const bookingDate=document.getElementById("bookingDate");
+const bookingTime=document.getElementById("bookingTime");
+const bookingMeeting=document.getElementById("bookingMeeting");
+const fullName=document.getElementById("name");
+const phoneInput=document.getElementById("phoneInput");
+const emailInput=document.getElementById("emailInput");
+const tickets=document.getElementById("tickets");
+const payment=document.getElementById("payment");
+const message=document.getElementById("message");
+
 const fallbackImg="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=900&q=80";const defaultMerchandise={brandedHoodie:{name:"Branded Hoodie",price:"3,500",description:"Premium Adventure Tribe hoodie.",image:"https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=700&q=80"}};const defaultGallery={gallery1:{title:"Adventure Tribe Kenya outdoor gallery",image:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80"},gallery2:{title:"Kenya hiking adventure gallery",image:"https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=900&q=80"}};
 function safe(v){return String(v||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}function cleanPrice(p){const v=String(p||"").trim();return !v?"":v.toUpperCase().includes("KES")?v:"KES "+v}function imageOrDefault(img,fallback){if(!img||String(img).includes("photos.app.goo.gl"))return fallback;return img}function ticketCount(v){const n=parseInt(String(v||"1"),10);return Number.isFinite(n)?n:1}function bookedForTrip(name){let total=0;Object.values(bookingsCache||{}).forEach(b=>{if(b.trip===name && b.status!=="cancelled")total+=ticketCount(b.tickets)});return total}function seatsText(t){const max=Number(t.maxSeats)||0;if(!max)return"";const left=Math.max(0,max-bookedForTrip(t.name));return `${left} / ${max} Seats Left`}function isSold(t){const max=Number(t.maxSeats)||0;return t.status==="sold-out"||t.status==="closed"||(max>0&&max-bookedForTrip(t.name)<=0)}
 function setLink(id,url){const el=document.getElementById(id);if(url){el.href=url;el.classList.remove("hidden")}else el.classList.add("hidden")}
@@ -95,7 +106,37 @@ function renderMerchandise(data){const items=data&&Object.keys(data).length?data
 function renderGallery(data){const gallery=data&&Object.keys(data).length?data:defaultGallery;galleryContainer.innerHTML=Object.entries(gallery).map(([k,i],idx)=>`<div class="gallery-item ${idx===0||idx===3?"tall":""} reveal active"><img src="${safe(imageOrDefault(i.image,defaultGallery.gallery1.image))}" alt="${safe(i.title||"Adventure Tribe gallery")}"></div>`).join("")}
 function setupFilters(){const buttons=document.querySelectorAll(".filter-btn"),cards=document.querySelectorAll(".trip-card");buttons.forEach(b=>b.onclick=()=>{buttons.forEach(x=>x.classList.remove("active"));b.classList.add("active");const f=b.dataset.filter;cards.forEach(card=>card.style.display=f==="all"||card.dataset.category===f?"block":"none")})}
 trip.addEventListener("change",()=>{const t=window.tripDataByName?.[trip.value]||{};bookingDate.value=t.tripDate||"";bookingTime.value=t.departureTime||"";bookingMeeting.value=t.meetingPoint||""});
-window.sendBooking=async function(e){e.preventDefault();const selected=window.tripDataByName?.[trip.value]||{};const booking={tripId:selected.id||"",name:name.value,phone:phoneInput.value,email:emailInput.value,trip:trip.value,date:selected.tripDate||bookingDate.value,departureTime:selected.departureTime||bookingTime.value,meetingPoint:selected.meetingPoint||bookingMeeting.value,tickets:tickets.value,payment:payment.value,message:message.value,status:"new",createdAt:new Date().toLocaleString()};await set(push(ref(db,"bookings")),booking);const text=`Hello Adventure Tribe,%0A%0AI have submitted a booking.%0A%0AName: ${encodeURIComponent(booking.name)}%0APhone: ${encodeURIComponent(booking.phone)}%0ATrip: ${encodeURIComponent(booking.trip)}%0ADate: ${encodeURIComponent(booking.date)}%0ATime: ${encodeURIComponent(booking.departureTime)}%0AMeeting: ${encodeURIComponent(booking.meetingPoint)}%0ATickets: ${encodeURIComponent(booking.tickets)}`;open(whatsappFloat.href+"?text="+text,"_blank");alert("Booking submitted successfully!");e.target.reset()};
+window.sendBooking=async function(e){
+e.preventDefault();
+try{
+const selected=window.tripDataByName?.[trip.value];
+if(!selected){alert("Please select a trip.");return;}
+const booking={
+tripId:selected.id||"",
+name:fullName.value.trim(),
+phone:phoneInput.value.trim(),
+email:emailInput.value.trim(),
+trip:selected.name||trip.value,
+date:selected.tripDate||"",
+departureTime:selected.departureTime||"",
+meetingPoint:selected.meetingPoint||"",
+tickets:tickets.value,
+payment:payment.value,
+message:message.value.trim(),
+status:"new",
+createdAt:new Date().toISOString()
+};
+await set(push(ref(db,"bookings")),booking);
+alert("✅ Booking submitted successfully!");
+e.target.reset();
+bookingDate.value="";
+bookingTime.value="";
+bookingMeeting.value="";
+}catch(err){
+console.error(err);
+alert("Booking failed: "+err.message);
+}
+};
 async function saveSubscriber(){const email=newsletterEmail.value.trim();if(!email)return alert("Please enter your email.");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert("Please enter a valid email address.");try{subscribeBtn.disabled=true;subscribeBtn.textContent="Subscribing...";await set(push(ref(db,"subscribers")),{email,subscribed:true,source:"website_footer",createdAt:new Date().toISOString()});alert("🎉 Thank you for subscribing to Adventure Tribe!");newsletterEmail.value=""}catch(err){console.error(err);alert("Failed to subscribe. Check Firebase rules for subscribers writes.")}finally{subscribeBtn.disabled=false;subscribeBtn.textContent="Subscribe"}}subscribeBtn.onclick=saveSubscriber;window.saveSubscriber=saveSubscriber;
 onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGallery(s.val()));
 </script>
