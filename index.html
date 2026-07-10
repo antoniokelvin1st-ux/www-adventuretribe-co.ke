@@ -106,39 +106,170 @@ function renderMerchandise(data){const items=data&&Object.keys(data).length?data
 function renderGallery(data){const gallery=data&&Object.keys(data).length?data:defaultGallery;galleryContainer.innerHTML=Object.entries(gallery).map(([k,i],idx)=>`<div class="gallery-item ${idx===0||idx===3?"tall":""} reveal active"><img src="${safe(imageOrDefault(i.image,defaultGallery.gallery1.image))}" alt="${safe(i.title||"Adventure Tribe gallery")}"></div>`).join("")}
 function setupFilters(){const buttons=document.querySelectorAll(".filter-btn"),cards=document.querySelectorAll(".trip-card");buttons.forEach(b=>b.onclick=()=>{buttons.forEach(x=>x.classList.remove("active"));b.classList.add("active");const f=b.dataset.filter;cards.forEach(card=>card.style.display=f==="all"||card.dataset.category===f?"block":"none")})}
 trip.addEventListener("change",()=>{const t=window.tripDataByName?.[trip.value]||{};bookingDate.value=t.tripDate||"";bookingTime.value=t.departureTime||"";bookingMeeting.value=t.meetingPoint||""});
-window.sendBooking=async function(e){
-e.preventDefault();
-try{
-const selected=window.tripDataByName?.[trip.value];
-if(!selected){alert("Please select a trip.");return;}
-const booking={
-tripId:selected.id||"",
-name:fullName.value.trim(),
-phone:phoneInput.value.trim(),
-email:emailInput.value.trim(),
-trip:selected.name||trip.value,
-date:selected.tripDate||"",
-departureTime:selected.departureTime||"",
-meetingPoint:selected.meetingPoint||"",
-tickets:tickets.value,
-payment:payment.value,
-message:message.value.trim(),
-status:"new",
-createdAt:new Date().toISOString()
+window.sendBooking = async function(e){
+    e.preventDefault();
+
+    try{
+
+        const selected = window.tripDataByName?.[trip.value];
+
+        if(!selected){
+            alert("Please select a trip.");
+            return;
+        }
+
+        // Generate Booking ID
+        const bookingId = "AT" + Date.now().toString().slice(-6);
+
+        // Booking Object
+        const booking = {
+            bookingId: bookingId,
+            tripId: selected.id || "",
+            name: fullName.value.trim(),
+            phone: phoneInput.value.trim(),
+            email: emailInput.value.trim(),
+            trip: selected.name || trip.value,
+            date: selected.tripDate || "",
+            departureTime: selected.departureTime || "",
+            meetingPoint: selected.meetingPoint || "",
+            tickets: tickets.value,
+            payment: payment.value,
+            message: message.value.trim(),
+            status: "new",
+            createdAt: new Date().toISOString()
+        };
+
+        // Save booking
+        await set(
+            push(ref(db,"bookings")),
+            booking
+        );
+
+        // Show Ticket Popup
+        showTicket(booking);
+
+        // Reset Form
+        e.target.reset();
+
+        bookingDate.value = "";
+        bookingTime.value = "";
+        bookingMeeting.value = "";
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert("Booking failed:\n\n" + err.message);
+
+    }
+
 };
-await set(push(ref(db,"bookings")),booking);
-alert("✅ Booking submitted successfully!");
-e.target.reset();
-bookingDate.value="";
-bookingTime.value="";
-bookingMeeting.value="";
-}catch(err){
-console.error(err);
-alert("Booking failed: "+err.message);
+  function closeTicket(){
+    document.getElementById("ticketModal").style.display="none";
 }
-};
+
+function showTicket(data){
+
+    document.getElementById("ticketModal").style.display = "flex";
+
+    document.getElementById("ticketBookingId").innerText = data.bookingId;
+    document.getElementById("ticketName").innerText = data.name;
+    document.getElementById("ticketTrip").innerText = data.trip;
+    document.getElementById("ticketDate").innerText = data.date;
+    document.getElementById("ticketTime").innerText = data.departureTime;
+    document.getElementById("ticketMeeting").innerText = data.meetingPoint;
+    document.getElementById("ticketTickets").innerText = data.tickets;
+    document.getElementById("ticketPayment").innerText = data.payment;
+
+}
 async function saveSubscriber(){const email=newsletterEmail.value.trim();if(!email)return alert("Please enter your email.");if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert("Please enter a valid email address.");try{subscribeBtn.disabled=true;subscribeBtn.textContent="Subscribing...";await set(push(ref(db,"subscribers")),{email,subscribed:true,source:"website_footer",createdAt:new Date().toISOString()});alert("🎉 Thank you for subscribing to Adventure Tribe!");newsletterEmail.value=""}catch(err){console.error(err);alert("Failed to subscribe. Check Firebase rules for subscribers writes.")}finally{subscribeBtn.disabled=false;subscribeBtn.textContent="Subscribe"}}subscribeBtn.onclick=saveSubscriber;window.saveSubscriber=saveSubscriber;
 onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGallery(s.val()));
 </script>
+  <!-- BOOKING TICKET MODAL -->
+<div id="ticketModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;color:#111;border-radius:20px;max-width:500px;width:100%;padding:30px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.4);">
+
+        <button onclick="closeTicket()" style="position:absolute;right:15px;top:15px;border:none;background:none;font-size:24px;cursor:pointer;">×</button>
+
+        <center>
+
+            <img src="adventuretribe-brand.png" width="90">
+
+            <h2 style="margin-top:10px;color:#f47b20;">
+                ADVENTURE TRIBE
+            </h2>
+
+            <p><b>BOOKING CONFIRMATION</b></p>
+
+            <hr>
+
+        </center>
+
+        <table style="width:100%;margin-top:15px;line-height:2;">
+            <tr>
+                <td><b>Booking ID</b></td>
+                <td id="ticketBookingId"></td>
+            </tr>
+
+            <tr>
+                <td><b>Name</b></td>
+                <td id="ticketName"></td>
+            </tr>
+
+            <tr>
+                <td><b>Trip</b></td>
+                <td id="ticketTrip"></td>
+            </tr>
+
+            <tr>
+                <td><b>Date</b></td>
+                <td id="ticketDate"></td>
+            </tr>
+
+            <tr>
+                <td><b>Departure</b></td>
+                <td id="ticketTime"></td>
+            </tr>
+
+            <tr>
+                <td><b>Meeting</b></td>
+                <td id="ticketMeeting"></td>
+            </tr>
+
+            <tr>
+                <td><b>Tickets</b></td>
+                <td id="ticketTickets"></td>
+            </tr>
+
+            <tr>
+                <td><b>Payment</b></td>
+                <td id="ticketPayment"></td>
+            </tr>
+
+            <tr>
+                <td><b>Status</b></td>
+                <td style="color:green;font-weight:bold;">
+                    Pending Confirmation
+                </td>
+            </tr>
+        </table>
+
+        <center style="margin-top:25px;">
+
+            <button id="downloadTicket"
+                class="btn btn-primary">
+                Download Ticket
+            </button>
+
+            <button id="shareWhatsapp"
+                class="btn btn-outline">
+                WhatsApp
+            </button>
+
+        </center>
+
+    </div>
+</div>
 </body>
 </html>
