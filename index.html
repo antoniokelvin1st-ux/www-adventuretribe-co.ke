@@ -345,24 +345,34 @@ window.addReview=async function(e){
 };
 window.addEventListener("pageshow",restoreTicketAfterWhatsApp);
 onValue(ref(db,"reviews"),s=>renderAllReviewsLegacy(s.val()));
+function renderMerchandiseClean(data){
+    const items=data&&Object.keys(data).length?data:defaultMerchandise;
+    merchandiseContainer.innerHTML=Object.entries(items).map(([key,item])=>{const hasImage=!!item.image&&!String(item.image).includes("photos.app.goo.gl");const image=safe(imageOrDefault(item.image,defaultMerchandise.brandedHoodie.image));return `<div class="merch-card reveal active"><div class="product-img"><img class="product" src="${image}" alt="${safe(item.name)}">${hasImage?"":'<img class="brand-on-cloth" src="adventuretribe-brand.png" alt="Adventure Tribe logo">'}</div><div class="info"><h3>${safe(item.name)}</h3><p>${safe(cleanPrice(item.price))}</p><div class="description">${safe(item.description)}</div><button class="order-merch" type="button" data-name="${safe(item.name)}" data-price="${safe(cleanPrice(item.price))}">Order Now</button></div></div>`}).join("");
+    document.querySelectorAll(".order-merch").forEach(b=>b.onclick=()=>{const text=`Hello Adventure Tribe,%0A%0AI would like to order merchandise.%0A%0AItem: ${encodeURIComponent(b.dataset.name)}%0APrice: ${encodeURIComponent(b.dataset.price)}`;open(whatsappFloat.href+"?text="+text,"_blank")});
+}
 function renderGalleryCompact(data){
     const gallery=data&&Object.keys(data).length?data:defaultGallery;
     const items=Object.entries(gallery),visible=items.slice(0,10),more=items.slice(10);
     const item=([key,value],index)=>`<div class="gallery-item ${index===0||index===3?"tall":""} reveal active"><img src="${safe(imageOrDefault(value.image,defaultGallery.gallery1.image))}" alt="${safe(value.title||"Adventure Tribe gallery")}"></div>`;
     galleryContainer.innerHTML=visible.map(item).join("")+(more.length?`<div style="grid-column:1/-1;"><details style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px;"><summary style="cursor:pointer;color:#f47b20;font-weight:800;">Show more photos (${more.length})</summary><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;max-height:480px;overflow-y:auto;padding-top:18px;">${more.map(([key,value])=>`<div class="gallery-item" style="height:220px;"><img src="${safe(imageOrDefault(value.image,defaultGallery.gallery1.image))}" alt="${safe(value.title||"Adventure Tribe gallery")}"></div>`).join("")}</div></details></div>`:"");
 }
+function openTripPoster(card){
+    const image=card.querySelector(".trip-img img"),title=card.querySelector("h3");
+    document.getElementById("tripPosterImage").src=image.src;
+    document.getElementById("tripPosterImage").alt=image.alt;
+    document.getElementById("tripPosterTitle").textContent=title?.textContent||"Adventure Tribe Experience";
+    document.getElementById("tripPosterModal").style.display="flex";
+}
+window.closeTripPoster=function(){document.getElementById("tripPosterModal").style.display="none"};
 tripContainer.addEventListener("click",e=>{
     const poster=e.target.closest(".trip-img");
     if(!poster)return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    const card=poster.closest(".trip-card");
-    const wasExpanded=card.classList.contains("expanded");
-    document.querySelectorAll(".trip-card.expanded").forEach(x=>x.classList.remove("expanded"));
-    if(!wasExpanded)card.classList.add("expanded");
+    openTripPoster(poster.closest(".trip-card"));
 },true);
-window.addEventListener("scroll",()=>document.querySelectorAll(".trip-card.expanded").forEach(x=>x.classList.remove("expanded")),{passive:true});
-onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGalleryCompact(s.val()));
+window.addEventListener("scroll",()=>{document.querySelectorAll(".trip-card.expanded").forEach(x=>x.classList.remove("expanded"));window.closeTripPoster()},{passive:true});
+onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandiseClean(s.val()));onValue(ref(db,"gallery"),s=>renderGalleryCompact(s.val()));
 </script>
   <!-- BOOKING TICKET MODAL -->
 <div id="ticketModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99999;align-items:center;justify-content:center;padding:20px;">
@@ -451,6 +461,13 @@ onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(d
         </center>
 
 </div>
+</div>
+<div id="tripPosterModal" onclick="if(event.target===this)closeTripPoster()" style="display:none;position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:24px;">
+  <div style="position:relative;max-width:min(900px,94vw);max-height:92vh;">
+    <button type="button" onclick="closeTripPoster()" aria-label="Close poster" style="position:absolute;right:14px;top:14px;z-index:2;width:42px;height:42px;border:none;border-radius:50%;background:#f47b20;color:#fff;font-size:30px;line-height:40px;cursor:pointer;">×</button>
+    <img id="tripPosterImage" src="" alt="Adventure poster" style="max-width:100%;max-height:82vh;object-fit:contain;border-radius:18px;box-shadow:0 18px 55px rgba(0,0,0,.5);">
+    <h2 id="tripPosterTitle" style="color:#fff;text-align:center;margin-top:14px;"></h2>
+  </div>
 </div>
 <button type="button" onclick="openTicketWallet()" title="My saved tickets" style="position:fixed;right:22px;bottom:94px;z-index:999;width:58px;height:58px;border:none;border-radius:50%;background:#f47b20;color:#fff;font-size:1.35rem;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3);"><i class="fa-solid fa-ticket"></i></button>
 <div id="ticketWalletModal" onclick="if(event.target===this)closeTicketWallet()" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:20px;">
