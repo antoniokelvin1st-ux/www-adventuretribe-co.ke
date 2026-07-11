@@ -230,17 +230,18 @@ function getTicketData(){
 }
 function redirectBookingToWhatsApp(ticket){
     try{localStorage.setItem("adventureTribePendingTicket",JSON.stringify(ticket))}catch(e){}
-    window.location.assign("https://wa.me/"+bookingWhatsappNumber+"?text="+encodeURIComponent(ticketText(ticket)));
+    const url="https://wa.me/"+bookingWhatsappNumber+"?text="+encodeURIComponent(ticketText(ticket));
+    window.location.assign(url);
 }
 function restoreTicketAfterWhatsApp(){
     try{
         const saved=localStorage.getItem("adventureTribePendingTicket");
-        if(!saved)return;
+        if(!saved) return;
         localStorage.removeItem("adventureTribePendingTicket");
         const ticket=JSON.parse(saved);
         showTicket(ticket);
-        if(ticket.firebaseKey)onValue(ref(db,"bookings/"+ticket.firebaseKey),s=>{const live=s.val();if(live)updateTicketStatus(live.status)});
-    }catch(e){console.warn("Ticket restore failed",e)}
+        if(ticket.firebaseKey) onValue(ref(db,"bookings/"+ticket.firebaseKey),s=>{const live=s.val();if(live)updateTicketStatus(live.status)});
+    }catch(e){console.warn("Could not restore ticket",e)}
 }
 function shareTicketOnWhatsApp(){
     const ticket=getTicketData();
@@ -272,6 +273,8 @@ onValue(ref(db,"settings/contact"),s=>{
     const number=String((s.val()||{}).whatsapp||"").replace(/\D/g,"");
     if(number) bookingWhatsappNumber=number;
 });
+restoreTicketAfterWhatsApp();
+window.addEventListener("pageshow",restoreTicketAfterWhatsApp);
 function renderLiveReviews(data){
     const submitted=Object.values(data||{}).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
     const combined=[...submitted,...defaultReviews];
@@ -279,10 +282,10 @@ function renderLiveReviews(data){
 }
 function renderLiveReviews(data){
     const submitted=Object.values(data||{}).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
-    const all=[...submitted,...defaultReviews];
+    const combined=[...submitted,...defaultReviews];
     const card=r=>{const rating=Math.max(1,Math.min(5,Number(r.rating)||5));return `<div class="testimonial-card"><div class="stars">${"★".repeat(rating)+"☆".repeat(5-rating)}</div><p>“${safe(r.text)}”</p><div class="person"><img src="adventuretribe-brand.png" alt="Adventure Tribe reviewer"><div><h4>${safe(r.name)}</h4><small>Adventure Tribe Review</small></div></div></div>`};
-    const first=all.slice(0,2),rest=all.slice(2);
-    document.getElementById("reviewsList").innerHTML=first.map(card).join("")+(rest.length?`<div style="grid-column:1/-1;"><details style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px;"><summary style="cursor:pointer;color:#f47b20;font-weight:800;">Show more reviews (${rest.length})</summary><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-height:360px;overflow-y:auto;padding:18px 4px 4px;margin-top:12px;">${rest.map(card).join("")}</div></details></div>`:"");
+    const visible=combined.slice(0,2),more=combined.slice(2);
+    document.getElementById("reviewsList").innerHTML=visible.map(card).join("")+(more.length?`<div style="grid-column:1/-1;"><details style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px;"><summary style="cursor:pointer;color:#f47b20;font-weight:800;">Show more reviews (${more.length})</summary><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-height:360px;overflow-y:auto;padding:18px 4px 4px;margin-top:12px;">${more.map(card).join("")}</div></details></div>`:"");
 }
 window.addReview=async function(e){
     e.preventDefault();
@@ -297,8 +300,6 @@ window.addReview=async function(e){
         alert("Your review could not be submitted. Please try again.");
     }
 };
-restoreTicketAfterWhatsApp();
-window.addEventListener("pageshow",restoreTicketAfterWhatsApp);
 onValue(ref(db,"reviews"),s=>renderLiveReviews(s.val()));
 onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGallery(s.val()));
 </script>
