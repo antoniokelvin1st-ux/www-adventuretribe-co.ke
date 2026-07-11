@@ -282,7 +282,7 @@ function renderLiveReviews(data){
     const combined=[...submitted,...defaultReviews];
     document.getElementById("reviewsList").innerHTML=combined.map(r=>`<div class="testimonial-card"><div class="stars">${"★".repeat(Math.max(1,Math.min(5,Number(r.rating)||5)))+"☆".repeat(5-Math.max(1,Math.min(5,Number(r.rating)||5)))}</div><p>“${safe(r.text)}”</p><div class="person"><img src="adventuretribe-brand.png" alt="Adventure Tribe reviewer"><div><h4>${safe(r.name)}</h4><small>Adventure Tribe Review</small></div></div></div>`).join("");
 }
-function renderLiveReviews(data){
+function renderAllReviewsLegacy(data){
     const submitted=Object.values(data||{}).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
     const all=[...submitted,...defaultReviews];
     const card=r=>{const rating=Math.max(1,Math.min(5,Number(r.rating)||5));return `<div class="testimonial-card"><div class="stars">${"★".repeat(rating)+"☆".repeat(5-rating)}</div><p>“${safe(r.text)}”</p><div class="person"><img src="adventuretribe-brand.png" alt="Adventure Tribe reviewer"><div><h4>${safe(r.name)}</h4><small>Adventure Tribe Review</small></div></div></div>`};
@@ -303,7 +303,7 @@ window.addReview=async function(e){
     }
 };
 window.addEventListener("pageshow",restoreTicketAfterWhatsApp);
-onValue(ref(db,"reviews"),s=>renderLiveReviews(s.val()));
+onValue(ref(db,"reviews"),s=>renderAllReviewsLegacy(s.val()));
 onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGallery(s.val()));
 </script>
   <!-- BOOKING TICKET MODAL -->
