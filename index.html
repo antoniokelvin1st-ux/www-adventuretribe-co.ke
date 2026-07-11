@@ -68,6 +68,13 @@
     #galleryContainer .gallery-item:hover{transform:translateY(-8px);box-shadow:0 18px 35px rgba(0,0,0,.35)}
     #galleryContainer .gallery-item:hover img{transform:scale(1.12);filter:brightness(1.08)}
   </style>
+  <style>
+    .trip-card{transform-origin:center;position:relative}
+    .trip-card:hover,.trip-card.expanded{transform:translateY(-10px) scale(1.035);z-index:10;box-shadow:0 20px 45px rgba(0,0,0,.38)}
+    .trip-card:hover .trip-img img,.trip-card.expanded .trip-img img{transform:scale(1.1)}
+    .trip-img img{transition:transform .55s ease}
+    @media(max-width:820px){.trip-card.expanded{transform:scale(1.02)}}
+  </style>
 </head>
 <body>
 <nav class="navbar" id="navbar"><a href="#home" class="logo"><span class="logo-mark"><img src="adventuretribe-brand.png" alt="Adventure Tribe Kenya Logo"></span><span class="brand-name" id="brandName">Adventure Tribe</span></a><div class="nav-links" id="navLinks"><a href="#home">Home</a><a href="#adventures">Adventures</a><a href="#gallery">Gallery</a><a href="#merch">Merchandise</a><a href="#reviews">Reviews</a><a href="#contact">Contact</a><a href="#booking" class="btn btn-primary">Book Now</a></div><div class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></div></nav>
@@ -344,6 +351,17 @@ function renderGalleryCompact(data){
     const item=([key,value],index)=>`<div class="gallery-item ${index===0||index===3?"tall":""} reveal active"><img src="${safe(imageOrDefault(value.image,defaultGallery.gallery1.image))}" alt="${safe(value.title||"Adventure Tribe gallery")}"></div>`;
     galleryContainer.innerHTML=visible.map(item).join("")+(more.length?`<div style="grid-column:1/-1;"><details style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px;"><summary style="cursor:pointer;color:#f47b20;font-weight:800;">Show more photos (${more.length})</summary><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;max-height:480px;overflow-y:auto;padding-top:18px;">${more.map(([key,value])=>`<div class="gallery-item" style="height:220px;"><img src="${safe(imageOrDefault(value.image,defaultGallery.gallery1.image))}" alt="${safe(value.title||"Adventure Tribe gallery")}"></div>`).join("")}</div></details></div>`:"");
 }
+tripContainer.addEventListener("click",e=>{
+    const poster=e.target.closest(".trip-img");
+    if(!poster)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const card=poster.closest(".trip-card");
+    const wasExpanded=card.classList.contains("expanded");
+    document.querySelectorAll(".trip-card.expanded").forEach(x=>x.classList.remove("expanded"));
+    if(!wasExpanded)card.classList.add("expanded");
+},true);
+window.addEventListener("scroll",()=>document.querySelectorAll(".trip-card.expanded").forEach(x=>x.classList.remove("expanded")),{passive:true});
 onValue(ref(db,"trips"),s=>{tripsCache=s.val()||{};renderTrips()});onValue(ref(db,"bookings"),s=>{bookingsCache=s.val()||{};renderTrips()});onValue(ref(db,"merchandise"),s=>renderMerchandise(s.val()));onValue(ref(db,"gallery"),s=>renderGalleryCompact(s.val()));
 </script>
   <!-- BOOKING TICKET MODAL -->
